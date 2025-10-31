@@ -8,7 +8,6 @@ docker run --rm -it \
   -e IRODS_ZONES_CONFIG=irods_zones_config_unibo.py \
   -e FLASK_ENV=development \
   -e FLASK_DEBUG=1 \
-  mango \
-  python waitress_serve.py
-#   flask run --host=0.0.0.0 --port=3000
+  ghcr.io/donapieppo/mango-portal:latest \
+  flask run --host=0.0.0.0 --port=3000
 
