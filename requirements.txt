@@ -14,8 +14,9 @@ flower==2.0.1
 humanize==4.9.0
 hupper==1.12
 importlib-metadata==7.0.1
+mango_mdconverter==0.0.10
 matplotlib==3.9.2
-multidict==6.0.4
+multidict==6.7.0
 oic==1.6.1
 opensearch-py==2.4.2
 pandas==2.1.4
