@@ -1,0 +1,51 @@
+{% extends "base_core.html.j2" %}
+{% block custom_style %}
+    <style>
+div#login-form {
+    background-blend-mode: lighten;
+    /* You may add things like width, height, background-size... */
+}
+    </style>
+{% endblock custom_style %}
+{% block body %}
+  <div class="rounded-3 mx-auto" id="login-form">
+      <h3 class="text-center my-4">
+        Welcome to <br/>
+        Unibo iRODS <br/>
+        Active Data Repository
+      </h3>
+      <p class="alert alert-info my-2">You can obtain a new password from <a href="https://hpc.unibo.it">https://hpc.unibo.it</a></p>
+      <form action="{{ url_for('user_bp.login_basic') }}"" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <div class="form-group">
+              <label for="username">User id</label>
+              <input type="text"
+                     class="form-control"
+                     placeholder="Your user id"
+                     id="username"
+                     value="{{ userid }}"
+                     name="username"/>
+          </div>
+          <div class="form-group mb-3">
+              <label for="password">Password</label>
+              <input type="password"
+                     class="form-control"
+                     placeholder="Your password"
+                     id="password"
+                     name="password"/>
+          </div>
+          <div class="form-group mb-3">
+              <label for="irods_zone">iRODS zone</label>
+              <select class="form-select" name="irods_zone" id="irods_zone">
+                  {% for zone_name in config['irods_zones'] %}
+                      <option value="{{ zone_name }}"
+                              {% if zone_name == last_zone_name %}selected{% endif %}>
+                          {{ zone_name }}
+                      </option>
+                  {% endfor %}
+              </select>
+          </div>
+          <input type="submit" value="Log In" class="btn btn-block btn-primary mb-3"/>
+      </form>
+    </div>
+{% endblock body %}
