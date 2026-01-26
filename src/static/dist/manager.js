@@ -68,16 +68,9 @@ tab_prefixes = {
   new: "new",
 };
 const designer = new Designer();
-
-let library_request
-fetch("/metadata-schema/library").then((response) => {
-  return response.json();
-}).then((data) => {
-  library_request = new LibraryRequest(data);
-})
-
-
 const json_input = new JsonInput();
+
+let library_request;
 /**
  * Empty schema to start with.
  * @type {Schema}
@@ -86,17 +79,39 @@ const json_input = new JsonInput();
  * after the realm permissions are retrieved and a related permission check is performed
  *
  */
-let starting_schema = new Schema("schema-editor-100", container_id, urls);
+let starting_schema;
 
 // Request the list of schemas and start!
 
-let templates_request
+let templates_request;
 
-fetch(urls.list).then((response) => {
-  return response.json();
-}).then((data) => {
-  templates_request = new TemplatesRequest(data, container_id, urls)
-})
+function initialize_schema_manager(library_data = []) {
+  library_request = new LibraryRequest(library_data);
+  starting_schema = new Schema("schema-editor-100", container_id, urls);
+
+  fetch(urls.list)
+    .then((response) => response.json())
+    .then((data) => {
+      templates_request = new TemplatesRequest(data, container_id, urls);
+    });
+}
+
+function load_library_fields() {
+  fetch("/metadata-schema/library")
+    .then((response) => {
+      if (!response.ok) {
+        return [];
+      }
+      return response.json();
+    })
+    .then((data) => initialize_schema_manager(data))
+    .catch((error) => {
+      console.error("Unable to load library fields, continuing without them.", error);
+      initialize_schema_manager([]);
+    });
+}
+
+load_library_fields();
 
 // permissions and related helper functions hiding the bitwise logic and make the code compact
 
