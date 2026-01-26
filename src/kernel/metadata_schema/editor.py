@@ -61,6 +61,8 @@ UI = {
 register_module(**UI)
 
 schema_base_dir = os.path.abspath("storage")
+Path(schema_base_dir).mkdir(parents=True, exist_ok=True)
+Path(schema_base_dir, "library").mkdir(parents=True, exist_ok=True)
 
 
 def get_metadata_schema_dir(irods_session: iRODSSession):
@@ -247,9 +249,11 @@ def archive_meta_data_schema():
 @metadata_schema_editor_bp.route("/metadata-schema/library/<realm>", methods=["GET"])
 @cache.cached(timeout=3600)
 def get_library_fields(realm):
-    field_files = [
-        x for x in Path("storage", "library", realm).iterdir() if x.suffix == ".json"
-    ]
+    realm_path = Path("storage", "library", realm)
+    if not realm_path.exists():
+        return Response(f"error, library realm '{realm}' not found", status=404)
+
+    field_files = [x for x in realm_path.iterdir() if x.suffix == ".json"]
     if field_files:
         field_files.sort()
         fields = [x.read_text() for x in field_files]
@@ -260,9 +264,13 @@ def get_library_fields(realm):
 
 @metadata_schema_editor_bp.route("/metadata-schema/library-realms", methods=["GET"])
 def get_library_realms():
+    library_path = Path("storage", "library")
+    if not library_path.exists():
+        return json.dumps([])
+
     realms = [
         realm.parts[-1]
-        for realm in Path("storage", "library").iterdir()
+        for realm in library_path.iterdir()
         if realm.is_dir()
     ]
     return json.dumps(realms)
